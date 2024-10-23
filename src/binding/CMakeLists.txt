@@ -31,6 +31,8 @@ elseif (UNIX)
   set(CMAKE_INSTALL_RPATH $ORIGIN)
 endif ()
 
+find_package(Python 3.13 COMPONENTS Interpreter Development.Module REQUIRED)
+
 function(add_spdl_extension ffmpeg_version)
   set(name "_spdl_ffmpeg${ffmpeg_version}")
   message(STATUS "Building ${name}")
@@ -46,11 +48,10 @@ function(add_spdl_extension ffmpeg_version)
     list(APPEND defs SPDL_HOLD_GIL)
   endif ()
 
-  nanobind_add_module(${name} ${src})
+  nanobind_add_module(${name} FREE_THREADED ${src})
   target_compile_definitions(${name} PRIVATE "${defs}")
   target_link_libraries(${name} PRIVATE "spdl_ffmpeg${ffmpeg_version}")
   target_include_directories(${name} PRIVATE "${Python_INCLUDE_DIR}")
-  target_include_directories(nanobind-static PRIVATE "${Python_INCLUDE_DIR}")
 
   install(
     TARGETS ${name}
